@@ -1,0 +1,5 @@
+dependencies {
+  compile group: 'io.prometheus', name: 'simpleclient_hotspot', version: '0.0.23'
+
+  compile project(':webserver')
+}

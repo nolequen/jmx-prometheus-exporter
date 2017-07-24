@@ -1,0 +1,4 @@
+rootProject.name = 'jmx-prometheus-exporter'
+include 'agent'
+include 'webserver'
+include 'collector'
