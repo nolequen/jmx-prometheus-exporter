@@ -1,6 +1,4 @@
 dependencies {
-  compile group: 'args4j', name: 'args4j', version: '2.33'
-
   compile group: 'io.prometheus', name: 'simpleclient_servlet', version: '0.0.25'
   compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.6.v20170531'
 
