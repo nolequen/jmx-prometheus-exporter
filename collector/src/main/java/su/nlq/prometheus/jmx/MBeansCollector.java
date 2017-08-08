@@ -7,15 +7,16 @@ import su.nlq.prometheus.jmx.logging.Logger;
 import javax.management.*;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public final class MBeansCollector {
   private final @NotNull Collection<ObjectName> names;
-  private final @NotNull QueryExp query;
+  private final @NotNull Predicate<ObjectInstance> predicate;
 
   public MBeansCollector(@NotNull List<String> names, @NotNull List<String> exclude) {
     this.names = getObjectNames(names);
-    this.query = new BlacklistQuery(getObjectNames(exclude));
+    this.predicate = new BlacklistQuery(getObjectNames(exclude));
   }
 
   public @NotNull Collection<ObjectInstance> collect(@NotNull MBeanServerConnection connection) {
@@ -38,14 +39,14 @@ public final class MBeansCollector {
 
   private @NotNull Collection<ObjectInstance> query(@NotNull MBeanServerConnection connection, @Nullable ObjectName name) {
     try {
-      return connection.queryMBeans(name, query);
+      return connection.queryMBeans(name, null).stream().filter(predicate).collect(Collectors.toSet());
     } catch (IOException e) {
       Logger.instance.debug("Failed to query beans of '" + name + '\'', e);
       return Collections.emptySet();
     }
   }
 
-  private static final class BlacklistQuery extends QueryEval implements QueryExp {
+  private static final class BlacklistQuery implements Predicate<ObjectInstance> {
     private final @NotNull Collection<ObjectName> blacklist;
 
     public BlacklistQuery(@NotNull Collection<ObjectName> blacklist) {
@@ -53,8 +54,8 @@ public final class MBeansCollector {
     }
 
     @Override
-    public boolean apply(@NotNull ObjectName name) {
-      return !blacklist.contains(name);
+    public boolean test(@NotNull ObjectInstance object) {
+      return !blacklist.contains(object.getObjectName());
     }
   }
 }
