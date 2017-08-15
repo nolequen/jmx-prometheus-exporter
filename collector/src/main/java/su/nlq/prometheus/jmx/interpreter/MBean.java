@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public final class MBean {
+  private static final @NotNull String TYPE_PROPERTY_NAME = "type";
+
   private final @NotNull Optional<MBean> parent;
   private final @NotNull String type;
   private final @NotNull Map<String, String> labels;
@@ -17,15 +19,14 @@ public final class MBean {
   @SuppressWarnings("StaticMethodNamingConvention")
   public static @NotNull Optional<MBean> of(@NotNull ObjectName name, @NotNull MBeanAttributeInfo info) {
     final Map<String, String> properties = name.getKeyPropertyList();
-    final String type = properties.get("type");
+    final String type = properties.get(TYPE_PROPERTY_NAME);
     if (type == null) {
       return Optional.empty();
     }
 
-    final Map<String, String> labels =
-        properties.entrySet().stream()
-            .filter(entry -> !entry.getKey().equals("type"))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    final Map<String, String> labels = properties.entrySet().stream()
+        .filter(entry -> !entry.getKey().equals(TYPE_PROPERTY_NAME))
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     labels.put("attribute", info.getName());
 
     return Optional.of(new MBean(Optional.empty(), name.getDomain() + ':' + type, labels));
@@ -62,7 +63,7 @@ public final class MBean {
 
   public @NotNull Labels getLabels() {
     final Labels result = new Labels();
-    parent.ifPresent(bean -> result.add("type", type));
+    parent.ifPresent(bean -> result.add(TYPE_PROPERTY_NAME, type));
     labels.forEach((k, v) -> result.add(Correction.correct(k), v));
     return result;
   }

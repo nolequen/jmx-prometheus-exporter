@@ -21,7 +21,7 @@ public final class MBeansCollector {
 
   public @NotNull Collection<ObjectInstance> collect(@NotNull MBeanServerConnection connection) {
     return names.isEmpty()
-        ? new HashSet<>(query(connection, null))
+        ? query(connection, null)
         : names.stream().flatMap(name -> query(connection, name).stream()).collect(Collectors.toSet());
   }
 

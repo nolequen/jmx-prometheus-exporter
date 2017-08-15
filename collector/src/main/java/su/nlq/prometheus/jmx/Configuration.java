@@ -6,8 +6,6 @@ import su.nlq.prometheus.jmx.connection.local.LocalConnection;
 import su.nlq.prometheus.jmx.connection.local.LocalConnectionConfiguration;
 import su.nlq.prometheus.jmx.connection.remote.jmxmp.JMXMPConnectionConfiguration;
 import su.nlq.prometheus.jmx.connection.remote.rmi.RMIConnectionConfiguration;
-import su.nlq.prometheus.jmx.interpreter.Interpreter;
-import su.nlq.prometheus.jmx.interpreter.RuleConfiguration;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -44,26 +42,18 @@ public final class Configuration {
   @XmlElement(name = "name")
   private @NotNull List<String> blacklist = new ArrayList<>();
 
-  @XmlElementWrapper(name = "rules")
-  @XmlElement(name = "rule")
-  private @NotNull List<RuleConfiguration> rules = new ArrayList<>();
-
   public static @NotNull Optional<Configuration> parse(@NotNull File file) throws IOException, JAXBException {
     try (final InputStream input = new FileInputStream(file)) {
       return Optional.of((Configuration) unmarshaller(Configuration.class).unmarshal(input));
     }
   }
 
-  public @NotNull Iterable<Connection> getConnections() {
+  public @NotNull Iterable<Connection> connections() {
     return connections.stream().map(Supplier::get).collect(Collectors.toList());
   }
 
-  public @NotNull MBeansCollector getMBeansCollector() {
+  public @NotNull MBeansCollector collector() {
     return new MBeansCollector(whitelist, blacklist);
-  }
-
-  public @NotNull Interpreter getInterpreter() {
-    return new Interpreter(rules);
   }
 
   private static @NotNull <T> Unmarshaller unmarshaller(@NotNull Class<T> aClass) throws JAXBException {

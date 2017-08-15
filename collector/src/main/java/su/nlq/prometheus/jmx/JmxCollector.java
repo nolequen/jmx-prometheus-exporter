@@ -3,7 +3,7 @@ package su.nlq.prometheus.jmx;
 import io.prometheus.client.Collector;
 import org.jetbrains.annotations.NotNull;
 import su.nlq.prometheus.jmx.connection.Connection;
-import su.nlq.prometheus.jmx.interpreter.Interpreter;
+import su.nlq.prometheus.jmx.interpreter.Labels;
 import su.nlq.prometheus.jmx.interpreter.MBean;
 import su.nlq.prometheus.jmx.logging.Logger;
 import su.nlq.prometheus.jmx.scraper.Receiver;
@@ -13,12 +13,10 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public final class JmxCollector extends Collector {
   private final @NotNull Iterable<Connection> connections;
   private final @NotNull MBeansCollector mbeans;
-  private final @NotNull Interpreter interpreter;
 
   public static void register(@NotNull File config) throws IOException {
     try {
@@ -29,21 +27,22 @@ public final class JmxCollector extends Collector {
   }
 
   private JmxCollector(@NotNull Configuration configuration) {
-    connections = configuration.getConnections();
-    mbeans = configuration.getMBeansCollector();
-    interpreter = configuration.getInterpreter();
+    connections = configuration.connections();
+    mbeans = configuration.collector();
   }
 
   @Override
   public @NotNull List<MetricFamilySamples> collect() {
-    final MeasuringReceiver receiver = MeasuringReceiver.start(new DefaultReceiver(interpreter));
-    connections.forEach(connection -> connection.accept(serverConnection -> Scraper.of(serverConnection).scrape(mbeans.collect(serverConnection)).to(receiver)));
+    final MeasuringReceiver receiver = MeasuringReceiver.start(new DefaultReceiver());
+    connections.forEach(connection ->
+        connection.accept(serverConnection ->
+            Scraper.of(serverConnection).scrape(mbeans.collect(serverConnection)).to(receiver)));
     return receiver.stop();
   }
 
   private static final class MeasuringReceiver implements Receiver {
-    private static final @NotNull String METRICS_NAME = "jmx_scrape_duration_ms";
-    private static final @NotNull String HELP = "Scrape duration in milliseconds.";
+    private static final @NotNull String METRICS_NAME = "jmx_scrape_duration";
+    private static final @NotNull String HELP = "Scrape duration in nanoseconds.";
 
     private final @NotNull DefaultReceiver receiver;
     private final long startTime = System.nanoTime();
@@ -62,8 +61,8 @@ public final class JmxCollector extends Collector {
     }
 
     public @NotNull List<MetricFamilySamples> stop() {
-      final long duration = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime);
-      final List<MetricFamilySamples> samples = receiver.getSamples();
+      final long duration = System.nanoTime() - startTime;
+      final List<MetricFamilySamples> samples = receiver.samples();
       samples.add(new MetricFamilySamples(METRICS_NAME, Type.GAUGE, HELP, Collections.singletonList(
           new MetricFamilySamples.Sample(METRICS_NAME, Collections.emptyList(), Collections.emptyList(), duration))));
       return samples;
@@ -71,24 +70,29 @@ public final class JmxCollector extends Collector {
   }
 
   private static final class DefaultReceiver implements Receiver {
-    private final @NotNull Interpreter interpreter;
     private final @NotNull Map<String, MetricFamilySamples> samples = new HashMap<>();
-
-    public DefaultReceiver(@NotNull Interpreter interpreter) {
-      this.interpreter = interpreter;
-    }
 
     @Override
     public void accept(@NotNull MBean bean, @NotNull Object value) {
-      interpreter.accept(bean, value).accept((sample, type, help) -> {
-        Logger.instance.trace("Adding metric sample {}: {}", sample.name, sample.value);
-        samples
-            .computeIfAbsent(sample.name, name -> new MetricFamilySamples(name, type, help, new ArrayList<>()))
-            .samples.add(sample);
-      });
+      if (!(value instanceof Number)) {
+        return;
+      }
+      final String name = bean.getName();
+      if (name.isEmpty()) {
+        return;
+      }
+      final String help = bean.getHelp();
+      if (help.isEmpty()) {
+        return;
+      }
+      final Labels labels = bean.getLabels();
+      Logger.instance.trace("Adding metric sample {}: {}", name, value);
+      samples
+          .computeIfAbsent(name, k -> new MetricFamilySamples(k, Type.GAUGE, help, new ArrayList<>()))
+          .samples.add(new MetricFamilySamples.Sample(name, labels.getNames(), labels.getValues(), ((Number) value).doubleValue()));
     }
 
-    public @NotNull List<MetricFamilySamples> getSamples() {
+    public @NotNull List<MetricFamilySamples> samples() {
       return new ArrayList<>(samples.values());
     }
   }

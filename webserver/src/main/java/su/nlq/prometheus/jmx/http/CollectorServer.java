@@ -18,6 +18,8 @@ import java.net.InetSocketAddress;
 public enum CollectorServer {
   ;
 
+  private static final @NotNull String METRICS_PATH = "/metrics";
+
   public static void main(@NotNull String[] args) {
     Arguments.of(args, new CommandLineParams()).ifPresent(CollectorServer::start);
   }
@@ -37,7 +39,7 @@ public enum CollectorServer {
       Log.setLog(new Slf4jLog());
 
       final ServletHandler handler = new ServletHandler();
-      handler.addServletWithMapping(new ServletHolder(new MetricsServlet()), "/metrics");
+      handler.addServletWithMapping(new ServletHolder(new MetricsServlet()), METRICS_PATH);
 
       final Server server = new Server(address);
       server.setHandler(handler);

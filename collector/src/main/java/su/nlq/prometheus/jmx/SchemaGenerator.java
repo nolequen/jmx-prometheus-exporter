@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 public final class SchemaGenerator {
-  private static @NotNull Logger logger = LoggerFactory.getLogger(SchemaGenerator.class);
+  private static final @NotNull Logger logger = LoggerFactory.getLogger(SchemaGenerator.class);
 
   private final @NotNull String filename;
 
