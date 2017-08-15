@@ -35,9 +35,26 @@ public final class JmxCollector extends Collector {
   public @NotNull List<MetricFamilySamples> collect() {
     final MeasuringReceiver receiver = MeasuringReceiver.start(new DefaultReceiver());
     connections.forEach(connection ->
-        connection.accept(serverConnection ->
-            Scraper.of(serverConnection).scrape(mbeans.collect(serverConnection)).to(receiver)));
+        connection.accept((connectionID, serverConnection) ->
+            Scraper.of(serverConnection)
+                .scrape(mbeans.collect(serverConnection))
+                .to(new ConnectionReceiver(receiver, connectionID))));
     return receiver.stop();
+  }
+
+  private static final class ConnectionReceiver implements Receiver {
+    private final @NotNull Receiver receiver;
+    private final @NotNull String connection;
+
+    public ConnectionReceiver(@NotNull Receiver receiver, @NotNull String connection) {
+      this.receiver = receiver;
+      this.connection = connection;
+    }
+
+    @Override
+    public void accept(@NotNull MBean bean, @NotNull Object value) {
+      receiver.accept(bean.labeled("connection", connection), value);
+    }
   }
 
   private static final class MeasuringReceiver implements Receiver {

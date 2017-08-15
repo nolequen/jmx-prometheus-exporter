@@ -6,13 +6,14 @@ import su.nlq.prometheus.jmx.logging.Logger;
 import javax.management.remote.JMXConnector;
 import java.io.IOException;
 import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public final class CachedConnector implements Connector {
-
   private @NotNull Optional<JMXConnector> connector;
+  private @NotNull String address;
 
   public CachedConnector(@NotNull ConnectorSupplier supplier) {
+    address = supplier.address();
     try {
       connector = Optional.of(supplier.get());
     } catch (IOException e) {
@@ -22,7 +23,7 @@ public final class CachedConnector implements Connector {
   }
 
   @Override
-  public void accept(@NotNull Consumer<JMXConnector> consumer) {
-    connector.ifPresent(consumer);
+  public void accept(@NotNull BiConsumer<String, JMXConnector> consumer) {
+    connector.ifPresent(jmxConnector -> consumer.accept(address, jmxConnector));
   }
 }

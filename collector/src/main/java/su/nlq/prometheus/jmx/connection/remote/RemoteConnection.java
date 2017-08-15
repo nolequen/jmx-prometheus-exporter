@@ -6,7 +6,7 @@ import su.nlq.prometheus.jmx.logging.Logger;
 
 import javax.management.MBeanServerConnection;
 import java.io.IOException;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public final class RemoteConnection implements Connection {
   private final @NotNull Connector connector;
@@ -16,10 +16,10 @@ public final class RemoteConnection implements Connection {
   }
 
   @Override
-  public void accept(@NotNull Consumer<MBeanServerConnection> consumer) {
-    connector.accept(connection -> {
+  public void accept(@NotNull BiConsumer<String, MBeanServerConnection> consumer) {
+    connector.accept((address, connection) -> {
       try {
-        consumer.accept(connection.getMBeanServerConnection());
+        consumer.accept(address, connection.getMBeanServerConnection());
       } catch (IOException e) {
         Logger.instance.error("Can't get remote mbean server connection", e);
       }

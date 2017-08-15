@@ -13,7 +13,7 @@ import java.util.Map;
 
 enum BeanValueScraper {
 
-  Incompatible(ObjectName.class, String.class, String[].class, Boolean.class) {
+  Incompatible(ObjectName.class, String.class, String[].class, long[].class, Boolean.class) {
     @Override
     protected void process(@NotNull Receiver receiver, @NotNull MBean bean, @NotNull Object value) {
       Logger.instance.trace("Skipping incompatible data {}: {}", bean, value);
@@ -69,7 +69,7 @@ enum BeanValueScraper {
 
   public static void scrape(@NotNull Receiver receiver, @NotNull MBean bean, @NotNull Object value) {
     if (scrapers.stream().noneMatch(scraper -> scraper.tryScrape(receiver, bean, value))) {
-      Logger.instance.debug("Unknown data {} found: {}", bean);
+      Logger.instance.debug("Unknown data {} found: {}", bean, value);
     }
   }
 

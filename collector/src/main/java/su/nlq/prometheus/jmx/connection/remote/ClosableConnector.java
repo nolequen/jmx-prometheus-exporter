@@ -5,7 +5,7 @@ import su.nlq.prometheus.jmx.logging.Logger;
 
 import javax.management.remote.JMXConnector;
 import java.io.IOException;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public final class ClosableConnector implements Connector {
   private final @NotNull ConnectorSupplier supplier;
@@ -15,10 +15,10 @@ public final class ClosableConnector implements Connector {
   }
 
   @Override
-  public void accept(@NotNull Consumer<JMXConnector> consumer) {
+  public void accept(@NotNull BiConsumer<String, JMXConnector> consumer) {
     try (final JMXConnector connector = supplier.get()) {
-      consumer.accept(connector);
-    } catch (IOException e) {
+      consumer.accept(supplier.address(), connector);
+    } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException e) {
       Logger.instance.error("Error during connector creation", e);
     }
   }
