@@ -1,4 +1,4 @@
-package su.nlq.prometheus.jmx.interpreter;
+package su.nlq.prometheus.jmx.correction;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -1,7 +1,7 @@
 package su.nlq.prometheus.jmx.connection.remote.rmi;
 
 import org.jetbrains.annotations.NotNull;
-import su.nlq.prometheus.jmx.connection.remote.ConnectorSupplier;
+import su.nlq.prometheus.jmx.connection.remote.Connector;
 
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
@@ -13,16 +13,16 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
-public final class RMIConnectorSupplier extends ConnectorSupplier {
+public final class RMIConnector extends Connector {
   private final boolean ssl;
 
-  public RMIConnectorSupplier(@NotNull String address, @NotNull Optional<String[]> credentials, boolean ssl) {
+  public RMIConnector(@NotNull String address, @NotNull Optional<String[]> credentials, boolean ssl) {
     super(address, credentials);
     this.ssl = ssl;
   }
 
   @Override
-  public @NotNull JMXConnector get() throws IOException {
+  public @NotNull JMXConnector connect() throws IOException {
     final Map<String, Object> environment = environment();
     if (ssl) {
       environment.put(Context.SECURITY_PROTOCOL, "ssl");

@@ -1,8 +1,15 @@
 package su.nlq.prometheus.jmx.connection;
 
-import javax.management.MBeanServerConnection;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+import org.jetbrains.annotations.NotNull;
+import su.nlq.prometheus.jmx.logging.Logger;
 
-public interface Connection extends Consumer<BiConsumer<String, MBeanServerConnection>> {
+import java.io.IOException;
+
+public interface Connection {
+
+  static void fail(@NotNull String address, @NotNull IOException e) {
+    Logger.instance.error("Failed connect to " + address + ": " + e.getMessage());
+  }
+
+  void accept(@NotNull ConnectionConsumer consumer);
 }

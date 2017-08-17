@@ -1,6 +1,7 @@
-package su.nlq.prometheus.jmx.interpreter;
+package su.nlq.prometheus.jmx.bean;
 
 import org.jetbrains.annotations.NotNull;
+import su.nlq.prometheus.jmx.correction.Correction;
 
 import javax.management.MBeanAttributeInfo;
 import javax.management.ObjectName;

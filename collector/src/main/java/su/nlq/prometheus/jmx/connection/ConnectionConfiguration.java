@@ -1,9 +1,9 @@
 package su.nlq.prometheus.jmx.connection;
 
 import org.jetbrains.annotations.NotNull;
-import su.nlq.prometheus.jmx.connection.remote.CachedConnector;
-import su.nlq.prometheus.jmx.connection.remote.ClosableConnector;
-import su.nlq.prometheus.jmx.connection.remote.ConnectorSupplier;
+import su.nlq.prometheus.jmx.connection.remote.CachedConnection;
+import su.nlq.prometheus.jmx.connection.remote.ClosableConnection;
+import su.nlq.prometheus.jmx.connection.remote.Connector;
 import su.nlq.prometheus.jmx.connection.remote.RemoteConnection;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -25,11 +25,11 @@ public abstract class ConnectionConfiguration implements Supplier<Connection> {
 
   @Override
   public final @NotNull Connection get() {
-    final ConnectorSupplier connector = connector(address, credentials());
-    return new RemoteConnection(keep ? new CachedConnector(connector) : new ClosableConnector(connector));
+    final Connector connector = connector(address, credentials());
+    return new RemoteConnection(keep ? new CachedConnection(connector) : new ClosableConnection(connector));
   }
 
-  protected abstract @NotNull ConnectorSupplier connector(@NotNull String connectTo, @NotNull Optional<String[]> credentials);
+  protected abstract @NotNull Connector connector(@NotNull String connectTo, @NotNull Optional<String[]> credentials);
 
   private @NotNull Optional<String[]> credentials() {
     return (username.isEmpty() || password.isEmpty()) ? Optional.empty() : Optional.of(new String[]{username, password});

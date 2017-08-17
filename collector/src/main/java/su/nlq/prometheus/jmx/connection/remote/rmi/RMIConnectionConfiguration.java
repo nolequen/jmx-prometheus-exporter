@@ -2,7 +2,7 @@ package su.nlq.prometheus.jmx.connection.remote.rmi;
 
 import org.jetbrains.annotations.NotNull;
 import su.nlq.prometheus.jmx.connection.ConnectionConfiguration;
-import su.nlq.prometheus.jmx.connection.remote.ConnectorSupplier;
+import su.nlq.prometheus.jmx.connection.remote.Connector;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
@@ -14,7 +14,7 @@ public final class RMIConnectionConfiguration extends ConnectionConfiguration {
   private @NotNull Boolean ssl = false;
 
   @Override
-  protected @NotNull ConnectorSupplier connector(@NotNull String address, @NotNull Optional<String[]> credentials) {
-    return new RMIConnectorSupplier(address, credentials, ssl);
+  protected @NotNull Connector connector(@NotNull String address, @NotNull Optional<String[]> credentials) {
+    return new RMIConnector(address, credentials, ssl);
   }
 }

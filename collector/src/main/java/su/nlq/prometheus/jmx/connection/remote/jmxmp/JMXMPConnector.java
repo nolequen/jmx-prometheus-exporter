@@ -1,24 +1,23 @@
 package su.nlq.prometheus.jmx.connection.remote.jmxmp;
 
 import org.jetbrains.annotations.NotNull;
-import su.nlq.prometheus.jmx.connection.remote.ConnectorSupplier;
+import su.nlq.prometheus.jmx.connection.remote.Connector;
 
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXServiceURL;
-import javax.management.remote.jmxmp.JMXMPConnector;
 import java.io.IOException;
 import java.util.Optional;
 
-public final class JMXMPConnectorSupplier extends ConnectorSupplier {
+public final class JMXMPConnector extends Connector {
 
-  public JMXMPConnectorSupplier(@NotNull String address, @NotNull Optional<String[]> credentials) {
+  public JMXMPConnector(@NotNull String address, @NotNull Optional<String[]> credentials) {
     super(address, credentials);
   }
 
   @Override
-  public @NotNull JMXConnector get() throws IOException {
+  public @NotNull JMXConnector connect() throws IOException {
     final JMXServiceURL address = new JMXServiceURL("service:jmx:jmxmp://" + address());
-    final JMXMPConnector connector = new JMXMPConnector(address, environment());
+    final javax.management.remote.jmxmp.JMXMPConnector connector = new javax.management.remote.jmxmp.JMXMPConnector(address, environment());
     connector.connect();
     return connector;
   }

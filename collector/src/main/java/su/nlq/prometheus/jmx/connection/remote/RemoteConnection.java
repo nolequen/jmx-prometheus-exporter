@@ -2,27 +2,17 @@ package su.nlq.prometheus.jmx.connection.remote;
 
 import org.jetbrains.annotations.NotNull;
 import su.nlq.prometheus.jmx.connection.Connection;
-import su.nlq.prometheus.jmx.logging.Logger;
-
-import javax.management.MBeanServerConnection;
-import java.io.IOException;
-import java.util.function.BiConsumer;
+import su.nlq.prometheus.jmx.connection.ConnectionConsumer;
 
 public final class RemoteConnection implements Connection {
-  private final @NotNull Connector connector;
+  private final @NotNull Connection connection;
 
-  public RemoteConnection(@NotNull Connector connector) {
-    this.connector = connector;
+  public RemoteConnection(@NotNull Connection connection) {
+    this.connection = connection;
   }
 
   @Override
-  public void accept(@NotNull BiConsumer<String, MBeanServerConnection> consumer) {
-    connector.accept((address, connection) -> {
-      try {
-        consumer.accept(address, connection.getMBeanServerConnection());
-      } catch (IOException e) {
-        Logger.instance.error("Can't get remote mbean server connection", e);
-      }
-    });
+  public void accept(@NotNull ConnectionConsumer consumer) {
+    connection.accept(consumer);
   }
 }

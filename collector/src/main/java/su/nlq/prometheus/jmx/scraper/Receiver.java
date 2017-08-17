@@ -1,7 +1,7 @@
 package su.nlq.prometheus.jmx.scraper;
 
 import org.jetbrains.annotations.NotNull;
-import su.nlq.prometheus.jmx.interpreter.MBean;
+import su.nlq.prometheus.jmx.bean.MBean;
 
 public interface Receiver {
 
