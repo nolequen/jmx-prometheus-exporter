@@ -2,9 +2,9 @@ package su.nlq.prometheus.jmx;
 
 import io.prometheus.client.Collector;
 import org.jetbrains.annotations.NotNull;
+import su.nlq.prometheus.jmx.bean.Labels;
+import su.nlq.prometheus.jmx.bean.MBean;
 import su.nlq.prometheus.jmx.connection.Connection;
-import su.nlq.prometheus.jmx.interpreter.Labels;
-import su.nlq.prometheus.jmx.interpreter.MBean;
 import su.nlq.prometheus.jmx.logging.Logger;
 import su.nlq.prometheus.jmx.scraper.Receiver;
 import su.nlq.prometheus.jmx.scraper.Scraper;
