@@ -102,8 +102,8 @@ public final class JmxCollector extends Collector {
       if (help.isEmpty()) {
         return;
       }
-      final Labels labels = bean.getLabels();
       Logger.instance.trace("Adding metric sample {}: {}", name, value);
+      final Labels labels = bean.getLabels();
       samples
           .computeIfAbsent(name, k -> new MetricFamilySamples(k, Type.GAUGE, help, new ArrayList<>()))
           .samples.add(new MetricFamilySamples.Sample(name, labels.getNames(), labels.getValues(), ((Number) value).doubleValue()));

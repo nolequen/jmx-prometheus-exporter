@@ -12,9 +12,10 @@ import java.util.stream.Collectors;
 
 public final class MBean {
   private static final @NotNull String TYPE_PROPERTY_NAME = "type";
+  private static final @NotNull String ATTRIBUTE_PROPERTY_NAME = "attribute";
 
-  private final @NotNull Optional<MBean> parent;
-  private final @NotNull String type;
+  private final @NotNull String attribute;
+  private final @NotNull String name;
   private final @NotNull Map<String, String> labels;
 
   @SuppressWarnings("StaticMethodNamingConvention")
@@ -28,52 +29,43 @@ public final class MBean {
     final Map<String, String> labels = properties.entrySet().stream()
         .filter(entry -> !entry.getKey().equals(TYPE_PROPERTY_NAME))
         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    labels.put("attribute", info.getName());
 
-    return Optional.of(new MBean(Optional.empty(), name.getDomain() + ':' + type, labels));
+    return Optional.of(new MBean(name.getDomain() + ':' + type, info.getName(), labels));
   }
 
-  private MBean(@NotNull Optional<MBean> parent, @NotNull String type, @NotNull Map<String, String> labels) {
-    this.parent = parent;
-    this.type = type;
+  private MBean(@NotNull String name, @NotNull String attribute, @NotNull Map<String, String> labels) {
+    this.name = name;
+    this.attribute = attribute;
     this.labels = labels;
   }
 
-  public @NotNull MBean compose(@NotNull String name) {
-    return new MBean(Optional.of(this), name, new HashMap<>(labels));
+  public @NotNull MBean compose(@NotNull String key) {
+    return new MBean(name + '_' + attribute, key, new HashMap<>(labels));
   }
 
   public @NotNull MBean labeled(@NotNull String key, @NotNull String value) {
-    final MBean bean = new MBean(parent, type, new HashMap<>(labels));
+    final MBean bean = new MBean(name, attribute, new HashMap<>(labels));
     bean.labels.put(key, value);
     return bean;
   }
 
   @Override
   public @NotNull String toString() {
-    return getFullName() + " [" + getLabels() + ']';
+    return name + " [" + getLabels() + ']';
   }
 
   public @NotNull String getName() {
-    return getParentName().orElse(type);
+    return Correction.correct(name);
   }
 
   public @NotNull String getHelp() {
-    return getName();
+    return name;
   }
 
   public @NotNull Labels getLabels() {
     final Labels result = new Labels();
-    parent.ifPresent(bean -> result.add(TYPE_PROPERTY_NAME, type));
+    result.add(ATTRIBUTE_PROPERTY_NAME, attribute);
     labels.forEach((k, v) -> result.add(Correction.correct(k), v));
     return result;
-  }
-
-  private @NotNull String getFullName() {
-    return getParentName().map(name -> name + '.' + type).orElse(type);
-  }
-
-  private @NotNull Optional<String> getParentName() {
-    return parent.map(MBean::getFullName);
   }
 }
