@@ -33,9 +33,6 @@ final class BeanScraper {
       return Optional.empty();
     }
     try {
-      if (info.getName().contains("Usage")) {
-        return Optional.empty();
-      }
       return Optional.ofNullable(connection.getAttribute(bean, info.getName()));
     } catch (IOException | InstanceNotFoundException | ReflectionException | MBeanException | AttributeNotFoundException | RuntimeMBeanException e) {
       Logger.instance.debug("Failed to get attribute '" + bean + '[' + info + "]'", e);
