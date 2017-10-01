@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.kohsuke.args4j.Argument;
 import su.nlq.prometheus.jmx.arguments.Arguments;
 import su.nlq.prometheus.jmx.http.CollectorServer;
+import su.nlq.prometheus.jmx.http.ExpositionFormat;
 import su.nlq.prometheus.jmx.http.ServerParameters;
 
 import java.lang.instrument.Instrumentation;
@@ -21,13 +22,16 @@ public enum CollectorAgent {
 
   private static final class AgentArguments extends ServerParameters {
 
-    @Argument(index = 0, metaVar = "HOST", usage = "host", required = false)
+    @Argument(index = 0, metaVar = "FORMAT", usage = "exposition format", required = false)
+    private @NotNull ExpositionFormat format = ExpositionFormat.Text;
+
+    @Argument(index = 1, metaVar = "HOST", usage = "host", required = false)
     private @NotNull String host = "";
 
-    @Argument(index = 1, metaVar = "PORT", usage = "port", required = true)
+    @Argument(index = 2, metaVar = "PORT", usage = "port", required = true)
     private int port = 0;
 
-    @Argument(index = 2, metaVar = "FILE", usage = "configuration xml file", required = true)
+    @Argument(index = 3, metaVar = "FILE", usage = "configuration xml file", required = true)
     private @NotNull String config = "";
 
     @Override
@@ -43,6 +47,11 @@ public enum CollectorAgent {
     @Override
     protected @NotNull String getHost() {
       return host;
+    }
+
+    @Override
+    protected @NotNull ExpositionFormat getFormat() {
+      return format;
     }
   }
 }

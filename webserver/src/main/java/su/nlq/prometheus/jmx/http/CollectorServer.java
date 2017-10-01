@@ -1,9 +1,6 @@
 package su.nlq.prometheus.jmx.http;
 
-import io.prometheus.client.exporter.MetricsServlet;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.ServletHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Slf4jLog;
 import org.jetbrains.annotations.NotNull;
@@ -18,8 +15,6 @@ import java.net.InetSocketAddress;
 public enum CollectorServer {
   ;
 
-  private static final @NotNull String METRICS_PATH = "/metrics";
-
   public static void main(@NotNull String[] args) {
     Arguments.of(args, new CommandLineParams()).ifPresent(CollectorServer::start);
   }
@@ -31,19 +26,17 @@ public enum CollectorServer {
       Logger.instance.error("Failed to register collector", e);
       return;
     }
-    start(params.address());
+    start(params.address(), params.format());
   }
 
-  private static void start(@NotNull InetSocketAddress address) {
+  private static void start(@NotNull InetSocketAddress address, @NotNull ExpositionFormat format) {
     try {
       Log.setLog(new Slf4jLog());
 
-      final ServletHandler handler = new ServletHandler();
-      handler.addServletWithMapping(new ServletHolder(new MetricsServlet()), METRICS_PATH);
-
       final Server server = new Server(address);
-      server.setHandler(handler);
+      format.handler(server);
       server.start();
+
       Logger.instance.info("Prometheus server with JMX metrics started at " + address);
     } catch (Exception e) {
       Logger.instance.error("Failed to start server at " + address, e);
@@ -61,6 +54,9 @@ public enum CollectorServer {
     @Option(name = "-p", aliases = {"--port"}, usage = "web server port", required = true)
     private int port = 0;
 
+    @Option(name = "-f", aliases = {"--format"}, usage = "exposition format", required = false)
+    private @NotNull ExpositionFormat format = ExpositionFormat.Text;
+
     @Override
     protected @NotNull String getConfig() {
       return config;
@@ -74,6 +70,11 @@ public enum CollectorServer {
     @Override
     protected @NotNull String getHost() {
       return host;
+    }
+
+    @Override
+    protected @NotNull ExpositionFormat getFormat() {
+      return format;
     }
   }
 }
