@@ -1,4 +1,8 @@
 subprojects {
+  ext {
+    projectName = "jmx-prometheus-$project.name"
+  }
+
   group 'su.nlq'
   version '0.1'
 
@@ -61,14 +65,16 @@ subprojects {
     }
   }
 
-  jar.baseName = "jmx-prometheus-$project.name"
+  jar.baseName = projectName
 
   task sourcesJar(type: Jar, dependsOn: classes) {
+    baseName = projectName
     classifier = 'sources'
     from sourceSets.main.allSource
   }
 
   task javadocJar(type: Jar, dependsOn: javadoc) {
+    baseName = projectName
     classifier = 'javadoc'
     from javadoc.destinationDir
   }
