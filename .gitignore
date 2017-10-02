@@ -2,6 +2,9 @@ gradle/
 .project/
 .idea/
 
+build/
+out/
+
 *.iml
 gradlew*
 gradle.properties
