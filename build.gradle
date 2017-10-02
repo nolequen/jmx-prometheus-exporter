@@ -1,9 +1,10 @@
 group 'su.nlq'
-version '1.0'
+version '0.1'
 
 allprojects {
   apply plugin: 'java'
   apply plugin: 'maven'
+  apply plugin: 'signing'
 
   sourceCompatibility = 1.8
 
@@ -16,9 +17,65 @@ allprojects {
     mavenCentral()
   }
 
-  task createPom {
-    doLast {
-      pom {}.writeTo("$buildDir/pom.xml")
+  uploadArchives {
+    repositories {
+      mavenDeployer {
+        beforeDeployment { final MavenDeployment deployment -> signing.signPom(deployment) }
+
+        def user = project.hasProperty("ossrhUsername") ? ossrhUsername : ''
+        def password = project.hasProperty("ossrhUsername") ? ossrhPassword : ''
+
+        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+          authentication(userName: user, password: password)
+        }
+
+        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+          authentication(userName: user, password: password)
+        }
+
+        pom.project {
+          name 'JMX Prometheus exporter'
+          description 'Pipe for JMX MBeans to Prometheus '
+          url 'https://github.com/nolequen/jmx-prometheus-exporter'
+          licenses {
+            license {
+              name "The Apache Software License, Version 2.0"
+              url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+              distribution 'repo'
+            }
+          }
+          scm {
+            url 'https://github.com/nolequen/jmx-prometheus-exporter'
+            connection 'scm:git:git://github.com/nolequen/jmx-prometheus-exporter.git'
+            developerConnection 'scm:git:ssh://github.com:nolequen/jmx-prometheus-exporter.git'
+          }
+          developers {
+            developer {
+              name "Nolequen"
+              email "nolequen@gmail.com"
+              url "http://www.nlq.su/"
+            }
+          }
+        }
+      }
     }
+  }
+
+  task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+  }
+
+  task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+  }
+
+  artifacts {
+    archives sourcesJar, javadocJar
+  }
+
+  signing {
+    sign configurations.archives
   }
 }
