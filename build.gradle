@@ -1,7 +1,7 @@
-group 'su.nlq'
-version '0.1'
+subprojects {
+  group 'su.nlq'
+  version '0.1'
 
-allprojects {
   apply plugin: 'java'
   apply plugin: 'maven'
   apply plugin: 'signing'
@@ -60,6 +60,8 @@ allprojects {
       }
     }
   }
+
+  jar.baseName = "jmx-prometheus-$project.name"
 
   task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
