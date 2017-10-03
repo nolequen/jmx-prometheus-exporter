@@ -9,33 +9,18 @@ import su.nlq.prometheus.jmx.logging.Logger;
 import su.nlq.prometheus.jmx.scraper.Receiver;
 import su.nlq.prometheus.jmx.scraper.Scraper;
 
-import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 public final class JmxCollector extends Collector {
   private final @NotNull Iterable<Connection> connections;
   private final @NotNull MBeansCollector mbeans;
 
-  public static void register(@NotNull File config) throws IOException {
-    try {
-      Configuration.parse(config).map(JmxCollector::new).ifPresent(Collector::register);
-    } catch (IOException | JAXBException e) {
-      throw new IOException("Failed to parse " + config, e);
-    }
+  public static @NotNull Collector register(@NotNull Connection connection) {
+    return register(Collections.singleton(connection), Collections.emptyList(), Collections.emptyList());
   }
 
-  public static void register(@NotNull Connection connection) {
-    register(Collections.singleton(connection), Collections.emptyList(), Collections.emptyList());
-  }
-
-  public static void register(@NotNull Iterable<Connection> connections, @NotNull List<String> whitelist, @NotNull List<String> blacklist) {
-    new JmxCollector(connections, new MBeansCollector(whitelist, blacklist)).register();
-  }
-
-  private JmxCollector(@NotNull Configuration configuration) {
-    this(configuration.connections(), configuration.collector());
+  public static @NotNull Collector register(@NotNull Iterable<Connection> connections, @NotNull List<String> whitelist, @NotNull List<String> blacklist) {
+    return new JmxCollector(connections, new MBeansCollector(whitelist, blacklist)).register();
   }
 
   private JmxCollector(@NotNull Iterable<Connection> connections, @NotNull MBeansCollector collector) {

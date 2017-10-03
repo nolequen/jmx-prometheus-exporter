@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -42,9 +41,9 @@ public final class Configuration {
   @XmlElement(name = "name")
   private @NotNull List<String> blacklist = new ArrayList<>();
 
-  public static @NotNull Optional<Configuration> parse(@NotNull File file) throws IOException, JAXBException {
+  public static @NotNull Configuration parse(@NotNull File file) throws IOException, JAXBException {
     try (final InputStream input = new FileInputStream(file)) {
-      return Optional.of((Configuration) unmarshaller(Configuration.class).unmarshal(input));
+      return (Configuration) unmarshaller(Configuration.class).unmarshal(input);
     }
   }
 
@@ -52,8 +51,12 @@ public final class Configuration {
     return connections.stream().map(Supplier::get).collect(Collectors.toList());
   }
 
-  public @NotNull MBeansCollector collector() {
-    return new MBeansCollector(whitelist, blacklist);
+  public @NotNull List<String> whitelist() {
+    return whitelist;
+  }
+
+  public @NotNull List<String> blacklist() {
+    return blacklist;
   }
 
   private static @NotNull <T> Unmarshaller unmarshaller(@NotNull Class<T> aClass) throws JAXBException {
