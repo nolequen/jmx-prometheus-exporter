@@ -21,14 +21,26 @@ public final class JmxCollector extends Collector {
   public static void register(@NotNull File config) throws IOException {
     try {
       Configuration.parse(config).map(JmxCollector::new).ifPresent(Collector::register);
-    } catch (@SuppressWarnings("OverlyBroadCatchBlock") IOException | JAXBException e) {
+    } catch (IOException | JAXBException e) {
       throw new IOException("Failed to parse " + config, e);
     }
   }
 
+  public static void register(@NotNull Connection connection) {
+    register(Collections.singleton(connection), Collections.emptyList(), Collections.emptyList());
+  }
+
+  public static void register(@NotNull Iterable<Connection> connections, @NotNull List<String> whitelist, @NotNull List<String> blacklist) {
+    new JmxCollector(connections, new MBeansCollector(whitelist, blacklist)).register();
+  }
+
   private JmxCollector(@NotNull Configuration configuration) {
-    connections = configuration.connections();
-    mbeans = configuration.collector();
+    this(configuration.connections(), configuration.collector());
+  }
+
+  private JmxCollector(@NotNull Iterable<Connection> connections, @NotNull MBeansCollector collector) {
+    this.connections = connections;
+    this.mbeans = collector;
   }
 
   @Override
