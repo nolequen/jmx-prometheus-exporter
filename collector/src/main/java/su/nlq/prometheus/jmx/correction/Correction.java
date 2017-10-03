@@ -2,28 +2,48 @@ package su.nlq.prometheus.jmx.correction;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Function;
-import java.util.function.UnaryOperator;
+import java.io.Serializable;
 import java.util.regex.Pattern;
 
-public enum Correction implements UnaryOperator<String> {
-  UnsafeChars(Pattern.compile("[^a-zA-Z0-9_]")),
-  MultipleUnderscores(Pattern.compile("__+"));
+public enum Correction {
+  Key(Replacement.MultipleUnderscores.compose(Replacement.UnsafeChars)),
+  Value(Replacement.Quotes);
 
-  private static final @NotNull Function<String, String> correction = Correction.MultipleUnderscores.compose(Correction.UnsafeChars);
+  private final @NotNull Operator correction;
 
-  private final @NotNull Pattern pattern;
+  private Correction(@NotNull Operator correction) {
+    this.correction = correction;
+  }
 
-  public static @NotNull String correct(@NotNull String value) {
+  public @NotNull String apply(@NotNull String value) {
     return correction.apply(value);
   }
 
-  private Correction(@NotNull Pattern pattern) {
-    this.pattern = pattern;
+  private enum Replacement implements Operator {
+    UnsafeChars(Pattern.compile("[^a-zA-Z0-9_]"), "_"),
+    MultipleUnderscores(Pattern.compile("__+"), "_"),
+    Quotes(Pattern.compile("^\"|\"$"), "");
+
+    private final @NotNull Pattern pattern;
+    private final @NotNull String replacement;
+
+    private Replacement(@NotNull Pattern pattern, @NotNull String replacement) {
+      this.pattern = pattern;
+      this.replacement = replacement;
+    }
+
+    @Override
+    public @NotNull String apply(@NotNull String value) {
+      return pattern.matcher(value).replaceAll(replacement);
+    }
+
+    public @NotNull Operator compose(@NotNull Replacement before) {
+      return (String v) -> apply(before.apply(v));
+    }
   }
 
-  @Override
-  public @NotNull String apply(@NotNull String value) {
-    return pattern.matcher(value).replaceAll("_");
+  private interface Operator extends Serializable {
+
+    @NotNull String apply(@NotNull String value);
   }
 }

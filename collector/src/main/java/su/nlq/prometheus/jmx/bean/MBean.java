@@ -55,7 +55,7 @@ public final class MBean {
   }
 
   public @NotNull String getName() {
-    return Correction.correct(name);
+    return Correction.Key.apply(name);
   }
 
   public @NotNull String getHelp() {
@@ -65,7 +65,7 @@ public final class MBean {
   public @NotNull Labels getLabels() {
     final Labels result = new Labels();
     result.add(ATTRIBUTE_PROPERTY_NAME, attribute);
-    labels.forEach((k, v) -> result.add(Correction.correct(k), v));
+    labels.forEach((k, v) -> result.add(Correction.Key.apply(k), Correction.Value.apply(v)));
     return result;
   }
 }
