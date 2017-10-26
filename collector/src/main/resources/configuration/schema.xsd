@@ -34,7 +34,16 @@
   </xs:complexType>
 
   <xs:complexType name="local-connection" final="extension restriction">
+    <xs:complexContent>
+      <xs:extension base="connectionConfiguration">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="connectionConfiguration" abstract="true">
     <xs:sequence/>
+    <xs:attribute name="name" type="xs:string"/>
   </xs:complexType>
 
   <xs:complexType name="jmxmp-connection" final="extension restriction">
@@ -46,12 +55,16 @@
   </xs:complexType>
 
   <xs:complexType name="remote-connection" abstract="true">
-    <xs:sequence>
-      <xs:element name="username" type="xs:string" minOccurs="0"/>
-      <xs:element name="password" type="xs:string" minOccurs="0"/>
-    </xs:sequence>
-    <xs:attribute name="address" type="xs:string" use="required"/>
-    <xs:attribute name="keep" type="xs:boolean" use="required"/>
+    <xs:complexContent>
+      <xs:extension base="connectionConfiguration">
+        <xs:sequence>
+          <xs:element name="username" type="xs:string" minOccurs="0"/>
+          <xs:element name="password" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="address" type="xs:string" use="required"/>
+        <xs:attribute name="keep" type="xs:boolean" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
   </xs:complexType>
 
   <xs:complexType name="rmi-connection" final="extension restriction">

@@ -4,10 +4,13 @@ import org.jetbrains.annotations.NotNull;
 import su.nlq.prometheus.jmx.connection.Connection;
 import su.nlq.prometheus.jmx.connection.ConnectionConsumer;
 
-public final class RemoteConnection implements Connection {
+import java.util.Optional;
+
+public final class RemoteConnection extends Connection {
   private final @NotNull Connection connection;
 
-  public RemoteConnection(@NotNull Connection connection) {
+  public RemoteConnection(@NotNull Optional<String> name, @NotNull Connection connection) {
+    super(name);
     this.connection = connection;
   }
 

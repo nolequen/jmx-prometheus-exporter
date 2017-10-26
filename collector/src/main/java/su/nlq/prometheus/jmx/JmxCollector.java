@@ -32,10 +32,10 @@ public final class JmxCollector extends Collector {
   public @NotNull List<MetricFamilySamples> collect() {
     final MeasuringReceiver receiver = MeasuringReceiver.start(new DefaultReceiver());
     connections.forEach(connection ->
-        connection.accept((connectionID, serverConnection) ->
+        connection.accept((connectionName, serverConnection) ->
             Scraper.of(serverConnection)
                 .scrape(mbeans.collect(serverConnection))
-                .to(new ConnectionReceiver(receiver, connectionID))));
+                .to(new ConnectionReceiver(receiver, connectionName))));
     return receiver.stop();
   }
 

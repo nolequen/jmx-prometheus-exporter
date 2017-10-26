@@ -6,5 +6,5 @@ import javax.management.MBeanServerConnection;
 
 public interface ConnectionConsumer {
 
-  void accept(@NotNull String address, @NotNull MBeanServerConnection connection);
+  void accept(@NotNull String name, @NotNull MBeanServerConnection connection);
 }

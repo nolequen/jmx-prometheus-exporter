@@ -4,12 +4,22 @@ import org.jetbrains.annotations.NotNull;
 import su.nlq.prometheus.jmx.logging.Logger;
 
 import java.io.IOException;
+import java.util.Optional;
 
-public interface Connection {
+public abstract class Connection {
+  private final @NotNull Optional<String> name;
 
-  static void fail(@NotNull String address, @NotNull IOException e) {
-    Logger.instance.error("Failed connect to " + address + ": " + e.getMessage());
+  protected Connection(@NotNull Optional<String> name) {
+    this.name = name;
   }
 
-  void accept(@NotNull ConnectionConsumer consumer);
+  public abstract void accept(@NotNull ConnectionConsumer consumer);
+
+  protected final @NotNull String name(@NotNull String other) {
+    return name.orElse(other);
+  }
+
+  protected static void fail(@NotNull String name, @NotNull IOException e) {
+    Logger.instance.error("Failed connect to " + name + ": " + e.getMessage());
+  }
 }
