@@ -3,3 +3,9 @@ dependencies {
 
   compile project(':server')
 }
+
+jar {
+  manifest {
+    attributes("PreMain-Class": "su.nlq.prometheus.jmx.agent.CollectorAgent")
+  }
+}
