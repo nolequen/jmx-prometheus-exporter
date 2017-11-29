@@ -1,6 +1,17 @@
-dependencies {
-  compile group: 'io.prometheus', name: 'simpleclient_hotspot', version: '0.0.26'
+buildscript {
 
+  repositories {
+    jcenter()
+  }
+
+  dependencies {
+    classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+  }
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+dependencies {
   compile project(':server')
 }
 
@@ -8,4 +19,15 @@ jar {
   manifest {
     attributes("PreMain-Class": "su.nlq.prometheus.jmx.agent.CollectorAgent")
   }
+}
+
+shadowJar {
+  baseName = projectName
+  classifier = ''
+  version = "$project.version"
+
+  relocate 'com.google.protobuf', 'shadow.com.google.protobuf'
+  relocate 'org.eclipse.jetty', 'shadow.org.eclipse.jetty'
+  relocate 'org.intellij.lang.annotations', 'shadow.org.intellij.lang.annotations'
+  relocate 'org.jetbrains.annotations', 'shadow.org.jetbrains.annotations'
 }
