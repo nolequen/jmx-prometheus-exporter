@@ -7,3 +7,9 @@ dependencies {
 
   compile project(':collector')
 }
+
+jar {
+  manifest {
+    attributes 'Main-Class': 'su.nlq.prometheus.jmx.http.CollectorServer'
+  }
+}

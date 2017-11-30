@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.kohsuke.args4j.Option;
 import su.nlq.prometheus.jmx.Configuration;
 import su.nlq.prometheus.jmx.JmxCollector;
+import su.nlq.prometheus.jmx.arguments.Arguments;
 import su.nlq.prometheus.jmx.logging.Logger;
 
 import javax.xml.bind.JAXBException;
@@ -15,6 +16,10 @@ import java.net.InetSocketAddress;
 
 public enum CollectorServer {
   ;
+
+  public static void main(@NotNull String[] args) {
+    Arguments.of(args, new CommandLineParams()).ifPresent(CollectorServer::start);
+  }
 
   public static void start(@NotNull ServerParameters params) {
     try {
