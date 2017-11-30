@@ -98,7 +98,7 @@ subprojects {
   }
 
   artifacts {
-    archives sourcesJar, javadocJar
+    archives sourcesJar, javadocJar, shadowJar
   }
 
   signing {
