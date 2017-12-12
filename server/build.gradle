@@ -5,11 +5,13 @@ dependencies {
 
   compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
 
+  compile group: 'commons-daemon', name: 'commons-daemon', version: '1.0.15'
+
   compile project(':collector')
 }
 
 jar {
   manifest {
-    attributes 'Main-Class': 'su.nlq.prometheus.jmx.http.CollectorServer'
+    attributes 'Main-Class': 'su.nlq.prometheus.jmx.http.Launcher'
   }
 }
