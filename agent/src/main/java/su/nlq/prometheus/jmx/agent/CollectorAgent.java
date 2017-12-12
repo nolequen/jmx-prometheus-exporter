@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.kohsuke.args4j.Argument;
 import su.nlq.prometheus.jmx.arguments.Arguments;
+import su.nlq.prometheus.jmx.http.CollectorServer;
 import su.nlq.prometheus.jmx.http.ExpositionFormat;
 import su.nlq.prometheus.jmx.http.Launcher;
 import su.nlq.prometheus.jmx.http.ServerParameters;
@@ -19,7 +20,7 @@ public enum CollectorAgent {
   public static void premain(@Nullable String arguments) {
     if (launched.compareAndSet(false, true)) {
       final String[] splitted = Optional.ofNullable(arguments).orElse("").split(":");
-      Launcher.launch(Arguments.of(splitted, new AgentArguments()));
+      Launcher.create(Arguments.of(splitted, new AgentArguments())).ifPresent(CollectorServer::start);
     }
   }
 

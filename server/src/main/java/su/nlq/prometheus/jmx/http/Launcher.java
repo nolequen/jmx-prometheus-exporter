@@ -9,30 +9,26 @@ import su.nlq.prometheus.jmx.arguments.Arguments;
 import java.util.Optional;
 
 public final class Launcher implements Daemon {
-  private @NotNull Optional<ServerParameters> parameters = Optional.empty();
   private @NotNull Optional<CollectorServer> server = Optional.empty();
 
   public static void main(@NotNull String[] arguments) {
-    launch(CommandLineParams.parse(arguments));
+    create(CommandLineParams.parse(arguments)).ifPresent(CollectorServer::start);
   }
 
-  public static @NotNull Optional<CollectorServer> launch(@NotNull Optional<ServerParameters> parameters) {
+  public static @NotNull Optional<CollectorServer> create(@NotNull Optional<ServerParameters> parameters) {
     return parameters
         .flatMap(params -> CollectorServer.create(params.config())
-            .map(server -> {
-              server.start(params.address(), params.format());
-              return server;
-            }));
+            .map(server -> server.init(params.address(), params.format())));
   }
 
   @Override
   public void init(@NotNull DaemonContext context) {
-    parameters = CommandLineParams.parse(context.getArguments());
+    server = create(CommandLineParams.parse(context.getArguments()));
   }
 
   @Override
   public void start() {
-    server = launch(parameters);
+    server.ifPresent(CollectorServer::start);
   }
 
   @Override

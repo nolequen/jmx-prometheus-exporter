@@ -32,8 +32,7 @@ public final class CollectorServer {
     configuration = Configuration.parse(config);
   }
 
-  public void start(@NotNull InetSocketAddress address, @NotNull ExpositionFormat format) {
-    JmxCollector.register(configuration.connections(), configuration.whitelist(), configuration.blacklist());
+  public @NotNull CollectorServer init(@NotNull InetSocketAddress address, @NotNull ExpositionFormat format) {
     try {
       Log.setLog(new Slf4jLog());
 
@@ -41,12 +40,17 @@ public final class CollectorServer {
       format.handler(serverInstance);
       serverInstance.start();
 
-      this.server = serverInstance;
+      server = serverInstance;
 
       Logger.instance.info("Prometheus server with JMX metrics started at " + address);
     } catch (Exception e) {
       Logger.instance.error("Failed to start server at " + address, e);
     }
+    return this;
+  }
+
+  public void start() {
+    JmxCollector.register(configuration.connections(), configuration.whitelist(), configuration.blacklist());
   }
 
   public void stop() {
