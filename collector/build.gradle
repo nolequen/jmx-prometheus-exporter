@@ -1,5 +1,5 @@
 dependencies {
   compile group: 'args4j', name: 'args4j', version: '2.33'
-  compile group: 'io.prometheus', name: 'simpleclient', version: '0.1.0'
+  compile group: 'io.prometheus', name: 'simpleclient', version: '0.2.0'
   compile group: 'org.glassfish.main.external', name: 'jmxremote_optional-repackaged', version: '5.0'
 }
