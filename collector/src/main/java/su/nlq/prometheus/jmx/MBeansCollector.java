@@ -6,56 +6,66 @@ import su.nlq.prometheus.jmx.logging.Logger;
 
 import javax.management.*;
 import java.io.IOException;
-import java.util.*;
-import java.util.function.Predicate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
-public final class MBeansCollector {
-  private final @NotNull Collection<ObjectName> names;
-  private final @NotNull Predicate<ObjectInstance> predicate;
+public abstract class MBeansCollector {
+  private final @NotNull QueryExp query;
 
-  public MBeansCollector(@NotNull List<String> names, @NotNull List<String> exclude) {
-    this.names = getObjectNames(names);
-    this.predicate = new BlacklistQuery(getObjectNames(exclude));
+  public static @NotNull MBeansCollector create(@NotNull List<String> whitelist, @NotNull List<String> blacklist) {
+    return whitelist.isEmpty()
+        ? new ExtrusiveCollector(blacklist)
+        : new InclusiveCollector(whitelist, blacklist);
   }
 
-  public @NotNull Collection<ObjectInstance> collect(@NotNull MBeanServerConnection connection) {
-    return names.isEmpty()
-        ? query(connection, null)
-        : names.stream().flatMap(name -> query(connection, name).stream()).collect(Collectors.toSet());
+  protected MBeansCollector(@NotNull List<String> blacklist) {
+    this.query = new ExcludeQuery(blacklist);
   }
 
-  private static @NotNull Collection<ObjectName> getObjectNames(@NotNull Iterable<String> names) {
-    final Collection<ObjectName> result = new ArrayList<>();
-    names.forEach(name -> {
-      try {
-        result.add(new ObjectName(name));
-      } catch (MalformedObjectNameException e) {
-        Logger.instance.debug("Failed to construct " + name, e);
-      }
-    });
-    return result;
-  }
+  public abstract @NotNull Collection<ObjectInstance> collect(@NotNull MBeanServerConnection connection);
 
-  private @NotNull Collection<ObjectInstance> query(@NotNull MBeanServerConnection connection, @Nullable ObjectName name) {
+  protected final @NotNull Collection<ObjectInstance> query(@NotNull MBeanServerConnection connection, @Nullable ObjectName name) {
     try {
-      return connection.queryMBeans(name, null).stream().filter(predicate).collect(Collectors.toSet());
+      return connection.queryMBeans(name, query);
     } catch (IOException e) {
       Logger.instance.debug("Failed to query beans of '" + name + '\'', e);
       return Collections.emptySet();
     }
   }
 
-  private static final class BlacklistQuery implements Predicate<ObjectInstance> {
-    private final @NotNull Collection<ObjectName> blacklist;
+  private static final class InclusiveCollector extends MBeansCollector {
+    private final @NotNull Collection<ObjectName> names;
 
-    public BlacklistQuery(@NotNull Collection<ObjectName> blacklist) {
-      this.blacklist = blacklist;
+    public InclusiveCollector(@NotNull List<String> whitelist, @NotNull List<String> blacklist) {
+      super(blacklist);
+      this.names = new ArrayList<>(whitelist.size());
+      whitelist.forEach(name -> {
+        try {
+          this.names.add(new ObjectName(name));
+        } catch (MalformedObjectNameException e) {
+          Logger.instance.warn("Failed to construct " + name, e);
+        }
+      });
     }
 
     @Override
-    public boolean test(@NotNull ObjectInstance object) {
-      return !blacklist.contains(object.getObjectName());
+    public @NotNull Collection<ObjectInstance> collect(@NotNull MBeanServerConnection connection) {
+      return names.stream().flatMap(name -> query(connection, name).stream()).collect(Collectors.toSet());
+    }
+  }
+
+  private static final class ExtrusiveCollector extends MBeansCollector {
+
+    public ExtrusiveCollector(@NotNull List<String> blacklist) {
+      super(blacklist);
+    }
+
+    @Override
+    public @NotNull Collection<ObjectInstance> collect(@NotNull MBeanServerConnection connection) {
+      return query(connection, null);
     }
   }
 }

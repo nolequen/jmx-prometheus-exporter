@@ -20,7 +20,7 @@ public final class JmxCollector extends Collector {
   }
 
   public static @NotNull Collector register(@NotNull Iterable<Connection> connections, @NotNull List<String> whitelist, @NotNull List<String> blacklist) {
-    return new JmxCollector(connections, new MBeansCollector(whitelist, blacklist)).register();
+    return new JmxCollector(connections, MBeansCollector.create(whitelist, blacklist)).register();
   }
 
   private JmxCollector(@NotNull Iterable<Connection> connections, @NotNull MBeansCollector collector) {
