@@ -5,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+    classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
   }
 }
 
@@ -15,7 +15,7 @@ subprojects {
   }
 
   group 'su.nlq'
-  version '0.4.0'
+  version '0.6.0'
 
   apply plugin: 'java'
   apply plugin: 'maven'
@@ -25,7 +25,7 @@ subprojects {
   sourceCompatibility = 1.8
 
   dependencies {
-    compile group: 'org.jetbrains', name: 'annotations', version: '16.0.2'
+    compile group: 'org.jetbrains', name: 'annotations', version: '16.0.3'
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
   }
 

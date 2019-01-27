@@ -1,14 +1,14 @@
 dependencies {
-  compile group: 'io.prometheus', name: 'simpleclient_servlet', version: '0.4.0'
-  compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.11.v20180605'
-  compile group: 'su.nlq', name: 'prometheus-protobuf-servlet', version: '0.4.0'
+  compile group: 'io.prometheus', name: 'simpleclient_servlet', version: '0.6.0'
+  compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.14.v20181114'
+  compile group: 'su.nlq', name: 'prometheus-protobuf-servlet', version: '0.6.0'
   compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
   compile group: 'commons-daemon', name: 'commons-daemon', version: '1.1.0'
 
   compile project(':collector')
 
   testCompile group: 'junit', name: 'junit', version: '4.12'
-  testCompile group: 'org.eclipse.jetty', name: 'jetty-client', version: '9.4.11.v20180605'
+  testCompile group: 'org.eclipse.jetty', name: 'jetty-client', version: '9.4.14.v20181114'
 }
 
 jar {

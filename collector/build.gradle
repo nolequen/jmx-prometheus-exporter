@@ -1,5 +1,10 @@
 dependencies {
   compile group: 'args4j', name: 'args4j', version: '2.33'
-  compile group: 'io.prometheus', name: 'simpleclient', version: '0.4.0'
+  compile group: 'io.prometheus', name: 'simpleclient', version: '0.6.0'
   compile group: 'org.glassfish.main.external', name: 'jmxremote_optional-repackaged', version: '5.0'
+
+  compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.11'
+  compile group: 'com.sun.xml.bind', name: 'jaxb-core', version: '2.2.11'
+  compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.2.11'
+  compile group: 'javax.activation', name: 'activation', version: '1.1.1'
 }
