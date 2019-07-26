@@ -1,8 +1,9 @@
-package javax.management;
+package su.nlq.prometheus.jmx;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.management.*;
 import java.util.Collection;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
