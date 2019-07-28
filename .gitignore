@@ -1,9 +1,10 @@
-gradle/
-.project/
-.idea/
+gradle
+.gradle
+.project
+.idea
 
-build/
-out/
+build
+out
 
 *.iml
 gradlew*
