@@ -5,7 +5,6 @@ import org.jetbrains.annotations.Nullable;
 import org.kohsuke.args4j.Argument;
 import su.nlq.prometheus.jmx.arguments.Arguments;
 import su.nlq.prometheus.jmx.http.CollectorServer;
-import su.nlq.prometheus.jmx.http.ExpositionFormat;
 import su.nlq.prometheus.jmx.http.Launcher;
 import su.nlq.prometheus.jmx.http.ServerParameters;
 
@@ -35,9 +34,6 @@ public enum CollectorAgent {
     @Argument(index = 2, metaVar = "HOST", usage = "host", required = false)
     private @NotNull String host = "localhost";
 
-    @Argument(index = 3, metaVar = "FORMAT", usage = "exposition format", required = false)
-    private @NotNull ExpositionFormat format = ExpositionFormat.Text;
-
     @Override
     protected @NotNull String getConfig() {
       return config;
@@ -51,11 +47,6 @@ public enum CollectorAgent {
     @Override
     protected @NotNull String getHost() {
       return host;
-    }
-
-    @Override
-    protected @NotNull ExpositionFormat getFormat() {
-      return format;
     }
   }
 }

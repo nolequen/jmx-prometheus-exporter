@@ -18,7 +18,7 @@ public final class Launcher implements Daemon {
   public static @NotNull Optional<CollectorServer> create(@NotNull Optional<ServerParameters> parameters) {
     return parameters
         .flatMap(params -> CollectorServer.create(params.config())
-            .map(server -> server.init(params.address(), params.format())));
+            .map(server -> server.init(params.address())));
   }
 
   @Override
@@ -51,9 +51,6 @@ public final class Launcher implements Daemon {
     @Option(name = "-p", aliases = {"--port"}, usage = "web server port", required = true)
     private int port = 0;
 
-    @Option(name = "-f", aliases = {"--format"}, usage = "exposition format", required = false)
-    private @NotNull ExpositionFormat format = ExpositionFormat.Text;
-
     public static @NotNull Optional<ServerParameters> parse(@NotNull String[] arguments) {
       return Arguments.of(arguments, new CommandLineParams());
     }
@@ -71,11 +68,6 @@ public final class Launcher implements Daemon {
     @Override
     protected @NotNull String getHost() {
       return host;
-    }
-
-    @Override
-    protected @NotNull ExpositionFormat getFormat() {
-      return format;
     }
   }
 }

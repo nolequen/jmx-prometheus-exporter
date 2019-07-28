@@ -1,6 +1,10 @@
 package su.nlq.prometheus.jmx.http;
 
+import io.prometheus.client.exporter.MetricsServlet;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.gzip.GzipHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Slf4jLog;
 import org.jetbrains.annotations.NotNull;
@@ -16,6 +20,8 @@ import java.net.InetSocketAddress;
 import java.util.Optional;
 
 public final class CollectorServer {
+  private static final @NotNull String METRICS_PATH = "/metrics";
+
   private final @NotNull Configuration configuration;
   private @Nullable Server server;
 
@@ -32,12 +38,18 @@ public final class CollectorServer {
     configuration = Configuration.parse(config);
   }
 
-  public @NotNull CollectorServer init(@NotNull InetSocketAddress address, @NotNull ExpositionFormat format) {
+  public @NotNull CollectorServer init(@NotNull InetSocketAddress address) {
     try {
       Log.setLog(new Slf4jLog());
 
       final Server serverInstance = new Server(address);
-      format.handler(serverInstance);
+
+      final GzipHandler gzip = new GzipHandler();
+      final ServletContextHandler handler = new ServletContextHandler(gzip, "/");
+      gzip.setHandler(handler);
+      serverInstance.setHandler(gzip);
+      handler.addServlet(new ServletHolder(new MetricsServlet()), METRICS_PATH);
+
       serverInstance.start();
 
       server = serverInstance;

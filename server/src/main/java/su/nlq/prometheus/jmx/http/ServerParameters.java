@@ -16,15 +16,9 @@ public abstract class ServerParameters {
     return host.isEmpty() ? new InetSocketAddress(getPort()) : new InetSocketAddress(host, getPort());
   }
 
-  public final @NotNull ExpositionFormat format() {
-    return getFormat();
-  }
-
   protected abstract @NotNull String getConfig();
 
   protected abstract int getPort();
 
   protected abstract @NotNull String getHost();
-
-  protected abstract @NotNull ExpositionFormat getFormat();
 }
