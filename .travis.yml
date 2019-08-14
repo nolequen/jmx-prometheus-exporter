@@ -3,9 +3,16 @@ language: java
 dist: trusty
 
 jdk:
-- oraclejdk8
+  - oraclejdk8
 
 sudo: false
+
+before_install:
+  - wget http://services.gradle.org/distributions/gradle-5.0-bin.zip
+  - unzip -qq gradle-5.0-bin.zip
+  - export GRADLE_HOME=$PWD/gradle-5.0
+  - export PATH=$GRADLE_HOME/bin:$PATH
+  - gradle -v
 
 install: true
 
