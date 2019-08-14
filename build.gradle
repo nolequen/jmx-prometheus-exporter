@@ -17,7 +17,7 @@ subprojects {
   group 'su.nlq'
   version '0.6.1'
 
-  apply plugin: 'java'
+  apply plugin: 'java-library'
   apply plugin: 'maven'
   apply plugin: 'signing'
   apply plugin: 'com.github.johnrengelman.shadow'
@@ -25,8 +25,8 @@ subprojects {
   sourceCompatibility = 1.8
 
   dependencies {
-    compile group: 'org.jetbrains', name: 'annotations', version: '16.0.3'
-    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+    implementation group: 'org.jetbrains', name: 'annotations', version: '17.0.0'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.28'
   }
 
   repositories {

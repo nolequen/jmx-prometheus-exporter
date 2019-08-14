@@ -1,5 +1,7 @@
 dependencies {
-  compile project(':server')
+  implementation group: 'args4j', name: 'args4j', version: '2.33'
+  
+  implementation project(':server')
 }
 
 jar {
