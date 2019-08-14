@@ -42,7 +42,9 @@ enum BeanValueScraper {
     protected void process(@NotNull Receiver receiver, @NotNull MBean bean, @NotNull Object value) {
       Logger.instance.trace("Processing composite data array: {}", bean);
       for (CompositeData element : (CompositeData[]) value) {
-        CompositeData.process(receiver, bean, element);
+        if (element != null) {
+          CompositeData.process(receiver, bean, element);
+        }
       }
     }
   },
