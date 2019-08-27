@@ -3,10 +3,6 @@ buildscript {
   repositories {
     jcenter()
   }
-
-  dependencies {
-    classpath 'com.github.jengelman.gradle.plugins:shadow:5.1.0'
-  }
 }
 
 subprojects {
@@ -20,7 +16,6 @@ subprojects {
   apply plugin: 'java-library'
   apply plugin: 'maven'
   apply plugin: 'signing'
-  apply plugin: 'com.github.johnrengelman.shadow'
 
   sourceCompatibility = 1.8
 
@@ -31,12 +26,6 @@ subprojects {
 
   repositories {
     mavenCentral()
-  }
-
-  shadowJar {
-    baseName = projectName
-    classifier = ''
-    version = "$project.version"
   }
 
   uploadArchives {
@@ -98,7 +87,7 @@ subprojects {
   }
 
   artifacts {
-    archives sourcesJar, javadocJar, shadowJar
+    archives sourcesJar, javadocJar
   }
 
   signing {
