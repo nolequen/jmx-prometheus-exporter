@@ -20,8 +20,8 @@ subprojects {
   sourceCompatibility = 1.8
 
   dependencies {
-    implementation group: 'org.jetbrains', name: 'annotations', version: '17.0.0'
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.28'
+    implementation group: 'org.jetbrains', name: 'annotations', version: '18.0.0'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
   }
 
   repositories {

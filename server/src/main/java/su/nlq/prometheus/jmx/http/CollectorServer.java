@@ -13,7 +13,6 @@ import su.nlq.prometheus.jmx.Configuration;
 import su.nlq.prometheus.jmx.JmxCollector;
 import su.nlq.prometheus.jmx.logging.Logger;
 
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -28,13 +27,13 @@ public final class CollectorServer {
   public static @NotNull Optional<CollectorServer> create(@NotNull File config) {
     try {
       return Optional.of(new CollectorServer(config));
-    } catch (IOException | JAXBException e) {
+    } catch (IOException e) {
       Logger.instance.error("Failed to create collector server", e);
       return Optional.empty();
     }
   }
 
-  private CollectorServer(@NotNull File config) throws IOException, JAXBException {
+  private CollectorServer(@NotNull File config) throws IOException {
     configuration = Configuration.parse(config);
   }
 

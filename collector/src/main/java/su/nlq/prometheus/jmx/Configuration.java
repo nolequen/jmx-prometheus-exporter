@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.unmodifiableList;
+
 @XmlAccessorOrder
 @XmlRootElement(name = "configuration")
 public final class Configuration {
@@ -41,9 +43,11 @@ public final class Configuration {
   @XmlElement(name = "name")
   private @NotNull List<String> blacklist = new ArrayList<>();
 
-  public static @NotNull Configuration parse(@NotNull File file) throws IOException, JAXBException {
+  public static @NotNull Configuration parse(@NotNull File file) throws IOException {
     try (final InputStream input = new FileInputStream(file)) {
       return (Configuration) unmarshaller(Configuration.class).unmarshal(input);
+    } catch (JAXBException e) {
+      throw new IOException(e);
     }
   }
 
@@ -52,11 +56,11 @@ public final class Configuration {
   }
 
   public @NotNull List<String> whitelist() {
-    return whitelist;
+    return unmodifiableList(whitelist);
   }
 
   public @NotNull List<String> blacklist() {
-    return blacklist;
+    return unmodifiableList(blacklist);
   }
 
   private static @NotNull <T> Unmarshaller unmarshaller(@NotNull Class<T> aClass) throws JAXBException {
